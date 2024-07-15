@@ -5,11 +5,17 @@
 /** 
  * Multiplexor:
  * if (sel = 0) out = a, else out = b
+ * Nand(Nand(Not(sel), a), Nand(sel, b))
  */
-CHIP Mux {
+ CHIP Mux {
     IN a, b, sel;
     OUT out;
 
     PARTS:
-    //// Replace this comment with your code.
+    // Not(in=sel, out=notSel);
+    Nand(a=sel, b=true, out=notSel);
+    
+    Nand(a=a, b=notSel, out=nandA);
+    Nand(a=b, b=sel, out=nandB);
+    Nand(a=nandA, b=nandB, out=out);
 }
