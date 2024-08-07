@@ -13,5 +13,21 @@ CHIP RAM16K {
     OUT out[16];
 
     PARTS:
-    //// Replace this comment with your code.
+    // address[0..1] selects which RAM4K to use
+    // address[2..13] selects which RAM512, RAM64, RAM8, and register within the RAM4K to use
+    // We're using 2..13 instead of 3..14 because the address is 14 bits long
+    // For example, with the address 11110101010101:
+    // 0..1 = 11 (3), which selects RAM4K 3
+    // 2..4 = 110 (6), which selects RAM512 6
+    // 5..7 = 101 (5), which selects RAM64 5
+    // 8..10 = 010 (2), which selects RAM8 2
+    // 11..13 = 101 (5), which selects register 5 within RAM8 2
+    DMux4Way(in=load, sel=address[0..1], a=load_r0, b=load_r1, c=load_r2, d=load_r3);
+
+    RAM4K(in=in, load=load_r0, address=address[2..13], out=r0);
+    RAM4K(in=in, load=load_r1, address=address[2..13], out=r1);
+    RAM4K(in=in, load=load_r2, address=address[2..13], out=r2);
+    RAM4K(in=in, load=load_r3, address=address[2..13], out=r3);
+
+    Mux4Way16(a=r0, b=r1, c=r2, d=r3, sel=address[0..1], out=out);
 }
